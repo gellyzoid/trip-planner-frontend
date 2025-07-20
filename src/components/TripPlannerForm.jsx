@@ -155,8 +155,8 @@ const TripPlannerForm = ({
 
               {endDate && (
                 <p className="text-base">
-                  ( {format(searchParams.get("start"), "MMM. dd yyyy")} to{" "}
-                  {format(searchParams.get("end"), "MMM. dd yyyy")} )
+                  ( {format(new Date(startDate), "MMM. dd yyyy")} to{" "}
+                  {format(new Date(endDate), "MMM. dd yyyy")} )
                 </p>
               )}
             </div>
