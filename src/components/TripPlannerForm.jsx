@@ -48,9 +48,9 @@ const TripPlannerForm = ({
   const isDisabled =
     !searchParams.has("lat") || !searchParams.has("lon") || !hasDate || result;
 
-  const { city, region, country } = selectedLocation || [];
+  const { name, city, region, country } = selectedLocation || [];
 
-  const locatedAt = `the ${city} located at ${region}, ${country}`;
+  const locatedAt = `the ${name} located at ${city}, ${region}, ${country}`;
   const description = weather?.[0]?.description || "No description available";
 
   const handleSubmit = (e) => {
