@@ -50,9 +50,8 @@ const TripPlannerForm = ({
 
   const { city, region, country } = selectedLocation || [];
 
-  const locatedAt = `the ${city} located at ${region} region of the ${country}`;
-  const descriptionWeather =
-    weather?.[0]?.description || "No description available";
+  const locatedAt = `the ${city} located at ${region}, ${country}`;
+  const description = weather?.[0]?.description || "No description available";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -62,7 +61,12 @@ const TripPlannerForm = ({
     }
 
     onSubmitLandmarks(Number(lat), Number(lon));
-    onSubmit({ days, purpose, locatedAt, descriptionWeather });
+    onSubmit({
+      days,
+      purpose,
+      destination: locatedAt,
+      weatherDescription: description,
+    });
   };
 
   const handleReset = () => {

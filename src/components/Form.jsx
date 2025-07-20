@@ -36,6 +36,7 @@ function Form({
       const parsed = JSON.parse(raw);
       const content = parsed.choices?.[0]?.message?.content || "No response.";
       setResult(content);
+      console.log({ days, purpose, destination, weatherDescription });
     } catch (err) {
       setResult("Something went wrong.");
     } finally {
