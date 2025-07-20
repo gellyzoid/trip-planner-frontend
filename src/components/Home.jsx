@@ -1,0 +1,50 @@
+import { useRef, useState } from "react";
+import DrawerPlaceList from "./DrawerPlaceList";
+import DrawerWeather from "./DrawerWeather";
+import Form from "./Form";
+import Hero from "./Hero";
+import NavBar from "./NavBar";
+
+function Home() {
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [weather, setWeather] = useState([]);
+
+  const resultRef = useRef();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenWeather, setIsOpenWeather] = useState(false);
+
+  const handleCloseWeather = () => setIsOpenWeather(false);
+  const handleClose = () => setIsOpen(false);
+
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+      <NavBar />
+      <Hero />
+      <DrawerPlaceList data={data} isOpen={isOpen} handleClose={handleClose} />
+      <DrawerWeather
+        data={weather}
+        isOpenWeather={isOpenWeather}
+        handleCloseWeather={handleCloseWeather}
+      />
+
+      <Form
+        setLoading={setLoading}
+        setResult={setResult}
+        loading={loading}
+        result={result}
+        resultRef={resultRef}
+        data={data}
+        setData={setData}
+        setIsOpen={setIsOpen}
+        weather={weather}
+        setWeather={setWeather}
+        setIsOpenWeather={setIsOpenWeather}
+      />
+    </div>
+  );
+}
+
+export default Home;

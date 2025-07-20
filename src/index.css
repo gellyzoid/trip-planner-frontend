@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.react-datepicker {
+  width: auto !important;
+  font-size: 14px;
+}
+
+/* Properly align day headers */
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+/* Uniform width/height for each day cell */
+.react-datepicker__day {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  line-height: 2.5rem !important;
+  margin: 0.2rem;
+  text-align: center;
+}
+
+/* Ensure the days align in grid */
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
