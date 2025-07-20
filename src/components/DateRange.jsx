@@ -1,4 +1,5 @@
 import { addMonths, differenceInDays, format } from "date-fns";
+import { HR } from "flowbite-react";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,6 +13,8 @@ function DateRange({
   startDate,
   setEndDate,
   setStartDate,
+  selectedLocation,
+  onSubmitWeather,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -19,17 +22,39 @@ function DateRange({
 
   const difference = differenceInDays(endDate, startDate);
 
+  const [finalStartDate, setFinalStartDate] = useState(null);
+  const [finalEndDate, setFinalEndDate] = useState(null);
+
   const onChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
+  };
 
-    if (start && end) {
-      const currentParams = Object.fromEntries([...searchParams.entries()]);
+  const handleConfirm = (e) => {
+    e.preventDefault();
+
+    const currentParams = Object.fromEntries([...searchParams.entries()]);
+    if (selectedLocation) {
       setSearchParams({
         ...currentParams,
-        start: format(start, "yyyy-MM-dd"),
-        end: format(end, "yyyy-MM-dd"),
+        start: format(startDate, "yyyy-MM-dd"),
+        end: format(endDate, "yyyy-MM-dd"),
+      });
+
+      setFinalStartDate(startDate);
+      setFinalEndDate(endDate);
+      onSubmitWeather(
+        selectedLocation.lat,
+        selectedLocation.lon,
+        startDate,
+        endDate
+      );
+    } else {
+      Swal.fire({
+        icon: "info",
+        text: "Please enter your destination.",
+        showConfirmButton: true,
       });
     }
   };
@@ -76,22 +101,39 @@ function DateRange({
       </div>
 
       {startDate && endDate && (
-        <div className="flex items-center justify-center">
-          <button
-            className="px-4 py-2 bg-red-600 text-white rounded"
-            onClick={() => {
-              const newParams = new URLSearchParams(searchParams);
-              newParams.delete("start");
-              newParams.delete("end");
-              setSearchParams(newParams);
-              setStartDate(null);
-              setEndDate(null);
-              setDays(0);
-            }}
-          >
-            Reset Dates
-          </button>
-        </div>
+        <>
+          <HR className="mb-3" />
+          <div className="flex items-end justify-end gap-3">
+            <button
+              className={`px-4 py-2 text-white rounded ${
+                finalStartDate && finalEndDate
+                  ? "bg-green-800 hover:bg-green-900 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-600 cursor-pointer"
+              }`}
+              onClick={handleConfirm}
+              disabled={finalStartDate && finalEndDate}
+            >
+              {finalStartDate && finalEndDate ? "Confirmed" : "Confirm"}
+            </button>
+
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded"
+              onClick={() => {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete("start");
+                newParams.delete("end");
+                setSearchParams(newParams);
+                setFinalEndDate(null);
+                setFinalStartDate(null);
+                setStartDate(null);
+                setEndDate(null);
+                setDays(0);
+              }}
+            >
+              Change
+            </button>
+          </div>
+        </>
       )}
 
       {!endDate && (

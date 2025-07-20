@@ -47,6 +47,10 @@ const TripPlannerForm = ({
   const isDisabled =
     !searchParams.has("lat") || !searchParams.has("lon") || !hasDate || result;
 
+  const { city, state, country } = selectedLocation || [];
+
+  const locatedAt = `${city}, ${state}, ${country}`;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!days || !purpose) {
@@ -55,7 +59,6 @@ const TripPlannerForm = ({
     }
 
     onSubmitLandmarks(Number(lat), Number(lon));
-    onSubmitWeather(Number(lat), Number(lon), startDate, endDate);
     onSubmit({ days, purpose });
   };
 
@@ -98,6 +101,8 @@ const TripPlannerForm = ({
           startDate={startDate}
           setEndDate={setEndDate}
           setStartDate={setStartDate}
+          selectedLocation={selectedLocation}
+          onSubmitWeather={onSubmitWeather}
         />
       </div>
 

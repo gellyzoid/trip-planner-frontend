@@ -32,7 +32,6 @@ function SearchResult({
                     display_name: result.display_name,
                     city: result.address.city,
                     state: result.address.state_district,
-                    region: result.address.region,
                     country: result.address.country,
                     lat,
                     lon,
