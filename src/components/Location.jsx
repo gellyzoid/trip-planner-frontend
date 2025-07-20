@@ -56,11 +56,10 @@ function Location({
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${searchParams.get(
           "location"
-        )}`
+        )}&addressdetails=1`
       );
       const data = await res.json();
       setSearchResult(data);
-      console.log(data);
 
       if (!isLoading) setOpenModal(true);
 
