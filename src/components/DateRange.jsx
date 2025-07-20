@@ -15,15 +15,16 @@ function DateRange({
   setStartDate,
   selectedLocation,
   onSubmitWeather,
+  finalStartDate,
+  setFinalStartDate,
+  finalEndDate,
+  setFinalEndDate,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isFinalDate = endDate && startDate;
 
   const difference = differenceInDays(endDate, startDate);
-
-  const [finalStartDate, setFinalStartDate] = useState(null);
-  const [finalEndDate, setFinalEndDate] = useState(null);
 
   const onChange = (dates) => {
     const [start, end] = dates;

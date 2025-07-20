@@ -40,6 +40,9 @@ const TripPlannerForm = ({
   const [startDate, setStartDate] = useState(searchParams.get("start") || null);
   const [endDate, setEndDate] = useState(searchParams.get("end") || null);
 
+  const [finalStartDate, setFinalStartDate] = useState(null);
+  const [finalEndDate, setFinalEndDate] = useState(null);
+
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
 
@@ -79,6 +82,8 @@ const TripPlannerForm = ({
     setSelectedLocation(null);
     setStartDate(null);
     setEndDate(null);
+    setFinalStartDate(null);
+    setFinalEndDate(null);
     setWeather([]);
   };
 
@@ -110,6 +115,10 @@ const TripPlannerForm = ({
           setStartDate={setStartDate}
           selectedLocation={selectedLocation}
           onSubmitWeather={onSubmitWeather}
+          finalStartDate={finalStartDate}
+          finalEndDate={finalEndDate}
+          setFinalEndDate={setFinalEndDate}
+          setFinalStartDate={setFinalStartDate}
         />
       </div>
 
