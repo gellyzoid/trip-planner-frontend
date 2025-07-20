@@ -17,13 +17,20 @@ function Form({
   setWeather,
   setIsOpenWeather,
 }) {
-  const handlePlanRequest = async ({ days, purpose }) => {
+  const handlePlanRequest = async ({
+    days,
+    purpose,
+    destination,
+    weatherDescription,
+  }) => {
     try {
       setLoading(true);
       const res = await fetch(
         `https://api.angelvictorio.com/api/qna/ask?days=${days}&purpose=${encodeURIComponent(
           purpose
-        )}`
+        )}&destination=${encodeURIComponent(
+          destination
+        )}&weather=${encodeURIComponent(weatherDescription)}`
       );
       const raw = await res.text();
       const parsed = JSON.parse(raw);
@@ -112,6 +119,7 @@ function Form({
             setData={setData}
             setIsOpen={setIsOpen}
             result={result}
+            weather={weather}
             setWeather={setWeather}
           />
         </div>

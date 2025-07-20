@@ -30,6 +30,7 @@ const TripPlannerForm = ({
   onSubmitLandmarks,
   onSubmitWeather,
   setWeather,
+  weather,
 }) => {
   const [days, setDays] = useState("");
   const [purpose, setPurpose] = useState("");
@@ -47,9 +48,11 @@ const TripPlannerForm = ({
   const isDisabled =
     !searchParams.has("lat") || !searchParams.has("lon") || !hasDate || result;
 
-  const { city, state, country } = selectedLocation || [];
+  const { city, region, country } = selectedLocation || [];
 
-  const locatedAt = `${city}, ${state}, ${country}`;
+  const locatedAt = `the ${city} located at ${region} region of the ${country}`;
+  const descriptionWeather =
+    weather?.[0]?.description || "No description available";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -59,7 +62,7 @@ const TripPlannerForm = ({
     }
 
     onSubmitLandmarks(Number(lat), Number(lon));
-    onSubmit({ days, purpose });
+    onSubmit({ days, purpose, locatedAt, descriptionWeather });
   };
 
   const handleReset = () => {
