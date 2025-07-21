@@ -101,6 +101,57 @@ function Form({
     pdf.save("packing-list.pdf");
   };
 
+  function formatAIResponse(text) {
+    const withBold = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    const lines = withBold.split("\n");
+
+    let inList = false;
+    const output = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      if (!line) {
+        // Add single line break only if previous output isn't already a break or block end
+        const last = output.at(-1) || "";
+
+        continue;
+      }
+
+      // Bullet point
+      if (/^\*\s+/.test(line)) {
+        const content = line.replace(/^\*\s+/, "");
+        if (!inList) {
+          output.push("<ul>");
+          inList = true;
+        }
+        output.push(`<li>• ${content}</li>`);
+        continue;
+      }
+
+      // Close list if next line isn't a bullet
+      if (inList) {
+        output.push("</ul>");
+        inList = false;
+      }
+
+      // Numbered list
+      if (/^\d+\.\s+/.test(line)) {
+        output.push(`<p class="mb-[1px]">${line}</p>`);
+        continue;
+      }
+
+      // Plain paragraph (but inline-style)
+      output.push(`<div>${line}</div>`);
+    }
+
+    if (inList) {
+      output.push("</ul>");
+    }
+
+    return output.join("\n");
+  }
+
   return (
     <div className="px-4 py-6 max-w-6xl mx-auto">
       <motion.section
@@ -199,7 +250,12 @@ function Form({
                 }}
               >
                 <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-slate-200 dark:bg-gray-800">
-                  {result}
+                  <div
+                    className="prose"
+                    dangerouslySetInnerHTML={{
+                      __html: formatAIResponse(result),
+                    }}
+                  ></div>
                 </pre>
               </div>
 
