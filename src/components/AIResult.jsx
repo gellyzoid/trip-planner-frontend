@@ -144,7 +144,14 @@ function AIResult({ loading, result }) {
             🧳 Suggested Packing List
           </h2>
 
-          <div ref={resultRef}>
+          <div
+            ref={resultRef}
+            style={{
+              backgroundColor: "#fff",
+              color: "#000",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
             <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-slate-200">
               <div
                 className="prose"
