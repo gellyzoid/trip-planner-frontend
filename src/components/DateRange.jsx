@@ -85,7 +85,7 @@ function DateRange({
       </label>
 
       {/* Readonly Date Range Display */}
-      <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="flex items-center justify-center gap-2 mb-3">
         <input
           type="text"
           readOnly
