@@ -91,7 +91,7 @@ const TripPlannerForm = ({
   };
 
   return (
-    <aside className="w-full md:w-1/3 md:max-w-sm p-6 border-r bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <aside className="m-[1px] w-full md:w-1/3 md:max-w-sm p-6 border-r bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 transition-colors duration-300">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Heading */}
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
