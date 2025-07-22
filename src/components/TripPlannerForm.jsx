@@ -1,59 +1,131 @@
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiCalendar, FiFlag, FiMapPin } from "react-icons/fi";
 import { useSearchParams } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import DateRange from "./DateRange";
 import Location from "./Location";
+import Select from "react-select";
 
 const PURPOSE_GROUPS = [
   {
     label: "🧳 Leisure & Recreation",
     options: [
-      "Vacation",
-      "Beach Trip",
-      "Road Trip",
-      "Camping",
-      "Hiking",
-      "Backpacking",
-      "Sightseeing",
-      "Festival or Concert",
-      "Spa Getaway",
+      { label: "Vacation", value: "vacation" },
+      { label: "Beach Trip", value: "beach trip" },
+      { label: "Road Trip", value: "road trip" },
+      { label: "Camping", value: "camping" },
+      { label: "Hiking", value: "hiking" },
+      { label: "Backpacking", value: "backpacking" },
+      { label: "Sightseeing", value: "sightseeing" },
+      { label: "Festival or Concert", value: "festival or concert" },
+      { label: "Spa Getaway", value: "spa getaway" },
     ],
   },
   {
     label: "💼 Work & Study",
     options: [
-      "Work Travel",
-      "Remote Work",
-      "Conference",
-      "Business Meeting",
-      "Study Abroad",
-      "Research Expedition",
+      { label: "Work Travel", value: "work travel" },
+      { label: "Remote Work", value: "remote work" },
+      { label: "Conference", value: "conference" },
+      { label: "Business Meeting", value: "business meeting" },
+      { label: "Study Abroad", value: "study abroad" },
+      { label: "Research Expedition", value: "research expedition" },
     ],
   },
   {
     label: "🎉 Events & Occasions",
     options: [
-      "Wedding",
-      "Honeymoon",
-      "Birthday Celebration",
-      "Family Reunion",
-      "Bachelorette / Bachelor Party",
+      { label: "Wedding", value: "wedding" },
+      { label: "Honeymoon", value: "honeymoon" },
+      { label: "Birthday Celebration", value: "birthday celebration" },
+      { label: "Family Reunion", value: "family reunion" },
+      { label: "Bachelorette / Bachelor Party", value: "bachelorette party" },
     ],
   },
   {
     label: "🧘 Personal & Purpose-Driven",
     options: [
-      "Wellness Retreat",
-      "Volunteering",
-      "Visiting Family",
-      "Relocation / Moving",
-      "Photography Trip",
-      "Food & Culinary Tour",
+      { label: "Wellness Retreat", value: "wellness retreat" },
+      { label: "Volunteering", value: "volunteering" },
+      { label: "Visiting Family", value: "visiting family" },
+      { label: "Relocation / Moving", value: "relocation" },
+      { label: "Photography Trip", value: "photography trip" },
+      { label: "Food & Culinary Tour", value: "culinary tour" },
     ],
   },
 ];
+
+export const darkStyles = {
+  control: (base) => ({
+    ...base,
+    backgroundColor: "#1f2937", // Tailwind gray-800
+    borderColor: "#374151", // Tailwind gray-700
+    color: "#f9fafb", // Tailwind gray-50
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: "#1f2937", // dark bg
+    color: "#f9fafb",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? "#374151" : "#1f2937",
+    color: "#f9fafb",
+    cursor: "pointer",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#f9fafb", // text color for selected option
+  }),
+  input: (base) => ({
+    ...base,
+    color: "#f9fafb", // input text color
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#9ca3af", // Tailwind gray-400
+  }),
+};
+
+export const lightStyles = {
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: "#ffffff",
+    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db", // blue-500 / gray-300
+    color: "#111827", // gray-900
+    boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
+    "&:hover": {
+      borderColor: "#3b82f6",
+    },
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: "#ffffff",
+    color: "#111827",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? "#e5e7eb" : "#ffffff", // gray-200 on hover
+    color: "#111827",
+    cursor: "pointer",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#111827",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#6b7280", // gray-500
+  }),
+  groupHeading: (base) => ({
+    ...base,
+    color: "#6b7280",
+    fontWeight: 600,
+    fontSize: "0.75rem",
+    padding: "0.5rem 0.75rem",
+  }),
+};
 
 const TripPlannerForm = ({
   onSubmit,
@@ -125,6 +197,23 @@ const TripPlannerForm = ({
     setWeather([]);
   };
 
+  const [isDark, setIsDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <aside className="m-[1px] w-full md:w-1/3 md:max-w-sm p-6 border-r bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 transition-colors duration-300">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -191,25 +280,12 @@ const TripPlannerForm = ({
             <FiFlag className="text-blue-500" />
             Purpose of your trip
           </label>
-          <select
-            id="purpose"
-            required
-            value={purpose}
-            onChange={(e) => setPurpose(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          >
-            <option value="">-- Select Purpose --</option>
-
-            {PURPOSE_GROUPS.map((group) => (
-              <optgroup key={group.label} label={group.label}>
-                {group.options.map((opt) => (
-                  <option key={opt} value={opt.toLowerCase()}>
-                    {opt}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+          <Select
+            options={PURPOSE_GROUPS}
+            placeholder="e.g., Vacation"
+            onChange={(option) => setPurpose(option?.value || "")}
+            styles={isDark ? darkStyles : lightStyles}
+          />
         </div>
 
         {/* Destination Summary */}
