@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html,
+body {
+  @apply min-h-screen bg-gray-100 dark:bg-gray-900;
+}
+
 .react-datepicker {
   width: auto !important;
   font-size: 14px;

@@ -18,7 +18,7 @@ function Home() {
   const handleClose = () => setIsOpen(false);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
       <NavBar />
       <DrawerPlaceList data={data} isOpen={isOpen} handleClose={handleClose} />
       <DrawerWeather
