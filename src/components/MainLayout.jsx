@@ -24,7 +24,7 @@ function MainLayout({
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:8080/api/qna/ask?days=${days}&purpose=${encodeURIComponent(
+        `https://api.angelvictorio.com/api/qna/ask?days=${days}&purpose=${encodeURIComponent(
           purpose
         )}&destination=${encodeURIComponent(
           destination
@@ -45,7 +45,7 @@ function MainLayout({
   const fetchPlaces = async (latValue, lonValue) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/places?lat=${latValue}&lon=${lonValue}`
+        `https://api.angelvictorio.com/api/places?lat=${latValue}&lon=${lonValue}`
       );
 
       if (!response.ok) {
@@ -62,7 +62,7 @@ function MainLayout({
   const fetchWeather = async (latValue, lonValue, startDate, endDate) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/weather?lat=${latValue}&lon=${lonValue}&start=${format(
+        `https://api.angelvictorio.com/api/weather?lat=${latValue}&lon=${lonValue}&start=${format(
           startDate,
           "yyyy-MM-dd"
         )}&end=${format(endDate, "yyyy-MM-dd")}`
