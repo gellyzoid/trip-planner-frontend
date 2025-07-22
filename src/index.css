@@ -45,3 +45,14 @@ body {
   padding: 0;
   line-height: 1.2;
 }
+
+/* styles.css */
+.light-mode {
+  background-color: white !important;
+  color: #1f2937 !important; /* text-gray-800 */
+}
+
+.light-mode .prose {
+  color: #1f2937 !important;
+  background-color: white !important;
+}

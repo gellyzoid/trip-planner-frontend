@@ -1,29 +1,52 @@
-import html2canvas from "html2canvas-pro";
-import jsPDF from "jspdf";
-import { useRef } from "react";
 import { motion } from "framer-motion";
+import jsPDF from "jspdf";
 
 function AIResult({ loading, result }) {
-  const resultRef = useRef();
+  function downloadPDF(result) {
+    const doc = new jsPDF();
+    const margin = 15;
+    const maxLineWidth = 180;
+    const lineHeight = 10;
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-  async function downloadPDF() {
-    const input = resultRef.current;
-    if (!input) return;
+    const plainText = formatPlainTextResponse(result || "No data to print");
 
-    const canvas = await html2canvas(input, {
-      scale: 2,
-      useCORS: true,
+    // Break paragraphs into printable lines
+    const lines = doc.splitTextToSize(plainText, maxLineWidth);
+    let currentY = margin;
+
+    lines.forEach((line) => {
+      // Check if we need a new page
+      if (currentY + lineHeight > pageHeight - margin) {
+        doc.addPage();
+        currentY = margin;
+      }
+
+      doc.text(line, margin, currentY);
+      currentY += lineHeight;
     });
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
+    doc.save("packing-list.pdf");
+  }
 
-    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save("packing-list.pdf");
+  function formatPlainTextResponse(text) {
+    const withBoldRemoved = text.replace(/\*\*(.*?)\*\*/g, "$1");
+    const lines = withBoldRemoved.split("\n");
+
+    const plainOutput = [];
+
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+
+      if (/^\*\s+/.test(line)) {
+        plainOutput.push("• " + line.replace(/^\*\s+/, ""));
+      } else {
+        plainOutput.push(line);
+      }
+    }
+
+    return plainOutput.join("\n");
   }
 
   function formatAIResponse(text) {
@@ -144,28 +167,19 @@ function AIResult({ loading, result }) {
             🧳 Suggested Packing List
           </h2>
 
-          <div
-            ref={resultRef}
-            style={{
-              backgroundColor: "#fff",
-              color: "#000",
-              fontFamily: "Arial, sans-serif",
-            }}
-          >
-            <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-slate-200">
-              <div
-                className="prose"
-                dangerouslySetInnerHTML={{
-                  __html: formatAIResponse(result),
-                }}
-              ></div>
-            </pre>
-          </div>
+          <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-slate-200">
+            <div
+              className="prose"
+              dangerouslySetInnerHTML={{
+                __html: formatAIResponse(result),
+              }}
+            ></div>
+          </pre>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
-              onClick={downloadPDF}
+              onClick={() => downloadPDF(result)}
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 shadow-sm"
             >
               ⬇️ Download PDF
