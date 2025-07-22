@@ -6,18 +6,53 @@ import { Tooltip } from "react-tooltip";
 import DateRange from "./DateRange";
 import Location from "./Location";
 
-const PURPOSE_OPTIONS = [
-  "Camping",
-  "Swimming",
-  "Vacation",
-  "Work travel",
-  "Road trip",
-  "Hiking",
-  "Beach trip",
-  "Conference",
-  "Backpacking",
-  "Visiting family",
-  "Retreat",
+const PURPOSE_GROUPS = [
+  {
+    label: "🧳 Leisure & Recreation",
+    options: [
+      "Vacation",
+      "Beach Trip",
+      "Road Trip",
+      "Camping",
+      "Hiking",
+      "Backpacking",
+      "Sightseeing",
+      "Festival or Concert",
+      "Spa Getaway",
+    ],
+  },
+  {
+    label: "💼 Work & Study",
+    options: [
+      "Work Travel",
+      "Remote Work",
+      "Conference",
+      "Business Meeting",
+      "Study Abroad",
+      "Research Expedition",
+    ],
+  },
+  {
+    label: "🎉 Events & Occasions",
+    options: [
+      "Wedding",
+      "Honeymoon",
+      "Birthday Celebration",
+      "Family Reunion",
+      "Bachelorette / Bachelor Party",
+    ],
+  },
+  {
+    label: "🧘 Personal & Purpose-Driven",
+    options: [
+      "Wellness Retreat",
+      "Volunteering",
+      "Visiting Family",
+      "Relocation / Moving",
+      "Photography Trip",
+      "Food & Culinary Tour",
+    ],
+  },
 ];
 
 const TripPlannerForm = ({
@@ -164,10 +199,15 @@ const TripPlannerForm = ({
             className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="">-- Select Purpose --</option>
-            {PURPOSE_OPTIONS.map((option) => (
-              <option key={option} value={option.toLowerCase()}>
-                {option}
-              </option>
+
+            {PURPOSE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((opt) => (
+                  <option key={opt} value={opt.toLowerCase()}>
+                    {opt}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
