@@ -114,9 +114,9 @@ export const TripPlannerProvider = ({ children }) => {
           destination
         )}&weather=${encodeURIComponent(weatherDescription)}`
       );
-      const raw = await res.text();
-      const parsed = JSON.parse(raw);
+      const parsed = await res.json();
       const content = parsed.choices?.[0]?.message?.content || "No response.";
+
       setResult(content);
       console.log({ days, purpose, destination, weatherDescription });
     } catch (err) {
@@ -128,15 +128,15 @@ export const TripPlannerProvider = ({ children }) => {
 
   const fetchPlaces = async (latValue: number, lonValue: number) => {
     try {
-      const response = await fetch(
+      const res = await fetch(
         `http://localhost:8080/api/places?lat=${latValue}&lon=${lonValue}`
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
       }
 
-      const data = await response.json();
+      const data = await res.json();
       setData(data.results);
     } catch (error) {
       console.error("Error fetching places:", error);
@@ -150,18 +150,18 @@ export const TripPlannerProvider = ({ children }) => {
     endDate: string
   ) => {
     try {
-      const response = await fetch(
+      const res = await fetch(
         `http://localhost:8080/api/weather?lat=${latValue}&lon=${lonValue}&start=${format(
           startDate,
           "yyyy-MM-dd"
         )}&end=${format(endDate, "yyyy-MM-dd")}`
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
       }
 
-      const data = await response.json();
+      const data = await res.json();
       setWeather(data.days);
     } catch (error) {
       console.error("Error fetching weather:", error);
