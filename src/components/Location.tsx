@@ -11,12 +11,7 @@ import {
 } from "flowbite-react";
 import SearchResult from "./SearchResult";
 
-function Location({
-  selectedLocation,
-  setSelectedLocation,
-  location,
-  setData,
-}) {
+function Location({ selectedLocation, setSelectedLocation }) {
   const [searchParams, setSearchParams] = useSearchParams("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +112,7 @@ function Location({
               id="default-search"
               className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Search location..."
-              required=""
+              required
               onChange={handleChange}
               value={searchName}
               readOnly={selectedLocation}
@@ -176,7 +171,6 @@ function Location({
             searchResult={searchResult}
             setSelectedLocation={setSelectedLocation}
             setOpenModal={setOpenModal}
-            setData={setData}
             setSearchName={setSearchName}
           />
         </ModalBody>

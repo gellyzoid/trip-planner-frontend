@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import jsPDF from "jspdf";
+import { useTripPlanner } from "../contexts/TripPlannerContext";
 
-function AIResult({ loading, result }) {
+function AIResult() {
+  const { loading, result } = useTripPlanner();
+
   function downloadPDF(result) {
     const doc = new jsPDF();
     const margin = 15;
@@ -29,7 +32,7 @@ function AIResult({ loading, result }) {
     doc.save("packing-list.pdf");
   }
 
-  function formatPlainTextResponse(text) {
+  function formatPlainTextResponse(text: string): string {
     const withBoldRemoved = text.replace(/\*\*(.*?)\*\*/g, "$1");
     const lines = withBoldRemoved.split("\n");
 
@@ -49,7 +52,7 @@ function AIResult({ loading, result }) {
     return plainOutput.join("\n");
   }
 
-  function formatAIResponse(text) {
+  function formatAIResponse(text: string): string {
     const withBold = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
     const lines = withBold.split("\n");
 

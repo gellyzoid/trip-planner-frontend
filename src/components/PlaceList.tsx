@@ -1,7 +1,7 @@
 function PlaceList({ places }) {
   return (
     <div className="space-y-4">
-      {places.map((place) => {
+      {places?.map((place) => {
         const { fsq_place_id, name, location, categories } = place;
 
         // Use the first category icon (if available)

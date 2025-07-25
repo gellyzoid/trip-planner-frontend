@@ -1,11 +1,13 @@
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiCalendar, FiFlag, FiMapPin } from "react-icons/fi";
 import { useSearchParams } from "react-router-dom";
+import Select, { SingleValue, StylesConfig } from "react-select";
 import { Tooltip } from "react-tooltip";
+import { useTripPlanner } from "../contexts/TripPlannerContext";
 import DateRange from "./DateRange";
 import Location from "./Location";
-import Select from "react-select";
+import { darkStyles, lightStyles } from "../styles/styles";
 
 const PURPOSE_GROUPS = [
   {
@@ -56,102 +58,43 @@ const PURPOSE_GROUPS = [
   },
 ];
 
-export const darkStyles = {
-  control: (base) => ({
-    ...base,
-    backgroundColor: "#1f2937", // Tailwind gray-800
-    borderColor: "#374151", // Tailwind gray-700
-    color: "#f9fafb", // Tailwind gray-50
-  }),
-  menu: (base) => ({
-    ...base,
-    backgroundColor: "#1f2937", // dark bg
-    color: "#f9fafb",
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: state.isFocused ? "#374151" : "#1f2937",
-    color: "#f9fafb",
-    cursor: "pointer",
-  }),
-  singleValue: (base) => ({
-    ...base,
-    color: "#f9fafb", // text color for selected option
-  }),
-  input: (base) => ({
-    ...base,
-    color: "#f9fafb", // input text color
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "#9ca3af", // Tailwind gray-400
-  }),
-};
+export interface SelectedLocation {
+  display_name: string;
+  name: string;
+  city: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+  id: number;
+}
 
-export const lightStyles = {
-  control: (base, state) => ({
-    ...base,
-    backgroundColor: "#ffffff",
-    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db", // blue-500 / gray-300
-    color: "#111827", // gray-900
-    boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-    "&:hover": {
-      borderColor: "#3b82f6",
-    },
-  }),
-  menu: (base) => ({
-    ...base,
-    backgroundColor: "#ffffff",
-    color: "#111827",
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: state.isFocused ? "#e5e7eb" : "#ffffff", // gray-200 on hover
-    color: "#111827",
-    cursor: "pointer",
-  }),
-  singleValue: (base) => ({
-    ...base,
-    color: "#111827",
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "#6b7280", // gray-500
-  }),
-  groupHeading: (base) => ({
-    ...base,
-    color: "#6b7280",
-    fontWeight: 600,
-    fontSize: "0.75rem",
-    padding: "0.5rem 0.75rem",
-  }),
-};
+const TripPlannerForm = () => {
+  const {
+    result,
+    weather,
+    fetchPlaces,
+    handlePlanRequest,
+    setResult,
+    setData,
+    setWeather,
+    loading,
+    setIsOpen,
+    setIsOpenWeather,
+  } = useTripPlanner();
 
-const TripPlannerForm = ({
-  onSubmit,
-  onReset,
-  result,
-  setResult,
-  data,
-  setData,
-  onSubmitLandmarks,
-  onSubmitWeather,
-  setWeather,
-  weather,
-  setIsOpen,
-  setIsOpenWeather,
-  loading,
-}) => {
-  const [days, setDays] = useState("");
+  const [days, setDays] = useState(0);
   const [purpose, setPurpose] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [startDate, setStartDate] = useState(searchParams.get("start") || null);
-  const [endDate, setEndDate] = useState(searchParams.get("end") || null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const [finalStartDate, setFinalStartDate] = useState(null);
-  const [finalEndDate, setFinalEndDate] = useState(null);
+  const [finalStartDate, setFinalStartDate] = useState<Date | null>(null);
+  const [finalEndDate, setFinalEndDate] = useState<Date | null>(null);
 
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
@@ -159,22 +102,28 @@ const TripPlannerForm = ({
   const hasDate = searchParams.has("start") && searchParams.has("end");
 
   const isDisabled =
-    !searchParams.has("lat") || !searchParams.has("lon") || !hasDate || result;
+    !searchParams.has("lat") ||
+    !searchParams.has("lon") ||
+    !hasDate ||
+    Boolean(result);
 
-  const { name, city, region, country } = selectedLocation || [];
+  const name = selectedLocation?.name ?? "";
+  const city = selectedLocation?.city ?? "";
+  const region = selectedLocation?.region ?? "";
+  const country = selectedLocation?.country ?? "";
 
   const locatedAt = `the ${name} located at ${city}, ${region}, ${country}`;
   const description = weather?.[0]?.description || "No description available";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!days || !purpose) {
       alert("Please fill out all fields.");
       return;
     }
 
-    onSubmitLandmarks(Number(lat), Number(lon));
-    onSubmit({
+    fetchPlaces(Number(lat), Number(lon));
+    handlePlanRequest({
       days,
       purpose,
       destination: locatedAt,
@@ -183,11 +132,10 @@ const TripPlannerForm = ({
   };
 
   const handleReset = () => {
-    setDays("");
+    setDays(0);
     setPurpose("");
-    onReset?.(); // optional: call parent to clear result
     setResult("");
-    setData([]);
+    setData(null);
     setSearchParams({});
     setSelectedLocation(null);
     setStartDate(null);
@@ -214,6 +162,16 @@ const TripPlannerForm = ({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const start = searchParams.get("start");
+    const end = searchParams.get("end");
+
+    if (start && end) {
+      setStartDate(new Date(start));
+      setEndDate(new Date(end));
+    }
+  }, []);
+
   return (
     <aside className="m-[1px] w-full md:w-1/3 md:max-w-sm p-6 border-r bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 transition-colors duration-300">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -237,9 +195,6 @@ const TripPlannerForm = ({
           <Location
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}
-            data={data}
-            setData={setData}
-            placeholder="e.g., Kyoto, Japan 🌸"
           />
         </div>
 
@@ -257,13 +212,11 @@ const TripPlannerForm = ({
           </p>
           <DateRange
             setDays={setDays}
-            days={days}
             endDate={endDate}
             startDate={startDate}
             setEndDate={setEndDate}
             setStartDate={setStartDate}
             selectedLocation={selectedLocation}
-            onSubmitWeather={onSubmitWeather}
             finalStartDate={finalStartDate}
             finalEndDate={finalEndDate}
             setFinalEndDate={setFinalEndDate}
@@ -283,7 +236,9 @@ const TripPlannerForm = ({
           <Select
             options={PURPOSE_GROUPS}
             placeholder="e.g., Vacation"
-            onChange={(option) => setPurpose(option?.value || "")}
+            onChange={(option: SingleValue<{ label: string; value: string }>) =>
+              setPurpose(option?.value || "")
+            }
             styles={isDark ? darkStyles : lightStyles}
           />
         </div>
@@ -305,15 +260,10 @@ const TripPlannerForm = ({
                   {selectedLocation.name ||
                     selectedLocation.display_name?.split(",")[0]}
                 </span>
-                <Tooltip
-                  id="location-tooltip"
-                  effect="solid"
-                  multiline={true}
-                  place="top"
-                />
+                <Tooltip id="location-tooltip" place="top" />
                 {endDate && (
                   <p className="text-sm mt-1">
-                    ({format(new Date(startDate), "MMM. dd yyyy")} –{" "}
+                    ({format(new Date(startDate ?? ""), "MMM. dd yyyy")} –{" "}
                     {format(new Date(endDate), "MMM. dd yyyy")})
                   </p>
                 )}

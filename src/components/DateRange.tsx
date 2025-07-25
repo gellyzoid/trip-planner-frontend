@@ -1,55 +1,76 @@
 import { addMonths, differenceInDays, format } from "date-fns";
 import { HR } from "flowbite-react";
-import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useTripPlanner } from "../contexts/TripPlannerContext";
+import { Dispatch, SetStateAction } from "react";
+import { SelectedLocation } from "./TripPlannerForm";
+
+type DateRangeProps = {
+  setDays: Dispatch<SetStateAction<number>>;
+  startDate: Date | null;
+  endDate: Date | null;
+  setStartDate: Dispatch<SetStateAction<Date | null>>;
+  setEndDate: Dispatch<SetStateAction<Date | null>>;
+  selectedLocation: SelectedLocation | null;
+  finalStartDate: Date | null;
+  setFinalStartDate: Dispatch<SetStateAction<Date | null>>;
+  finalEndDate: Date | null;
+  setFinalEndDate: Dispatch<SetStateAction<Date | null>>;
+};
 
 function DateRange({
-  days,
   setDays,
   endDate,
   startDate,
   setEndDate,
   setStartDate,
   selectedLocation,
-  onSubmitWeather,
   finalStartDate,
   setFinalStartDate,
   finalEndDate,
   setFinalEndDate,
-}) {
+}: DateRangeProps) {
+  const { fetchWeather } = useTripPlanner();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isFinalDate = endDate && startDate;
 
-  const difference = differenceInDays(endDate, startDate);
+  const difference =
+    startDate && endDate ? differenceInDays(endDate, startDate) : 0;
 
-  const onChange = (dates) => {
+  const onChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
   };
 
-  const handleConfirm = (e) => {
+  const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
 
     const currentParams = Object.fromEntries([...searchParams.entries()]);
+
     if (selectedLocation) {
+      const formattedStart = format(startDate!, "yyyy-MM-dd");
+      const formattedEnd = format(endDate!, "yyyy-MM-dd");
+
       setSearchParams({
         ...currentParams,
-        start: format(startDate, "yyyy-MM-dd"),
-        end: format(endDate, "yyyy-MM-dd"),
+        start: formattedStart,
+        end: formattedEnd,
       });
 
       setFinalStartDate(startDate);
       setFinalEndDate(endDate);
-      onSubmitWeather(
+
+      fetchWeather(
         selectedLocation.lat,
         selectedLocation.lon,
-        startDate,
-        endDate
+        formattedStart,
+        formattedEnd
       );
     } else {
       Swal.fire({
@@ -112,7 +133,7 @@ function DateRange({
                   : "bg-green-600 hover:bg-green-600 cursor-pointer"
               }`}
               onClick={handleConfirm}
-              disabled={finalStartDate && finalEndDate}
+              disabled={Boolean(finalStartDate && finalEndDate)}
             >
               {finalStartDate && finalEndDate ? "Confirmed" : "Confirm"}
             </button>
